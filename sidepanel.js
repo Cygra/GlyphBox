@@ -166,16 +166,16 @@ const STRINGS = {
     searchPlaceholder: 'heart, arrow, math…',
     searchEmpty: 'No results found. Try another keyword.',
     searchHint: 'Search by name or keyword — e.g. <em>heart</em>, <em>arrow</em>, <em>math</em>',
-    favHint: 'Right-click ★ to add to favorites',
+    favHint: 'Right-click ⭐ to add to favorites',
     favoritesLabel: 'Saved Glyphs',
     clearFavorites: 'Clear all',
-    favoritesEmpty: 'No favorites yet. Right-click ★ on any glyph to save it.',
+    favoritesEmpty: 'No favorites yet. Right-click ⭐ on any glyph to save it.',
     recentEmpty: 'Nothing yet — use the converter or search!',
     copyBtn: '⎘ Copy',
     clickToCopy: 'Click to copy',
     toastCopied: 'Copied',
     toastRemovedFav: 'Removed from favorites',
-    toastAddedFav: '★ Added to favorites',
+    toastAddedFav: '⭐ Added to favorites',
     toastClearRecent: 'Recent history cleared',
     toastClearFav: 'Favorites cleared',
     toastNothingToCopy: 'Nothing to copy yet!',
@@ -194,16 +194,16 @@ const STRINGS = {
     searchPlaceholder: '心形、箭头、数学…',
     searchEmpty: '未找到结果，请尝试其他关键词。',
     searchHint: '按名称或关键词搜索，例如 <em>heart</em>、<em>arrow</em>、<em>math</em>',
-    favHint: '右键点击 ★ 可收藏字符',
+    favHint: '右键点击 ⭐ 可收藏字符',
     favoritesLabel: '已收藏',
     clearFavorites: '清除全部',
-    favoritesEmpty: '暂无收藏。右键点击字符上的 ★ 可收藏。',
+    favoritesEmpty: '暂无收藏。右键点击字符上的 ⭐ 可收藏。',
     recentEmpty: '暂无记录 — 使用样式或搜索功能吧！',
     copyBtn: '⎘ 复制',
     clickToCopy: '点击复制',
     toastCopied: '已复制',
     toastRemovedFav: '已取消收藏',
-    toastAddedFav: '★ 已收藏',
+    toastAddedFav: '⭐ 已收藏',
     toastClearRecent: '已清除最近记录',
     toastClearFav: '已清除收藏',
     toastNothingToCopy: '还没有内容可复制！',
@@ -573,7 +573,7 @@ function buildGlyphCard(entry, isFav) {
   const favBadge = document.createElement('span');
   favBadge.className = 'fav-badge';
   favBadge.setAttribute('aria-hidden', 'true');
-  favBadge.textContent = '★';
+  favBadge.textContent = '⭐';
 
   card.appendChild(favBadge);
   card.appendChild(glyphEl);
