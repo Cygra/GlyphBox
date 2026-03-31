@@ -124,7 +124,19 @@ body {
   background-clip: text;
 }
 
-.icon-btn {
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#langToggle {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -663,9 +675,10 @@ body {
 
 .glyph-card .fav-badge {
   position: absolute;
-  top: 4px;
-  right: 4px;
-  font-size: 10px;
+  top: 3px;
+  right: 3px;
+  font-size: 20px;
+  line-height: 1;
   opacity: 0;
   transition: opacity var(--transition);
   color: #f5a623;
@@ -685,6 +698,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.fav-hint {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-align: center;
 }
 
 /* ── Empty / Hint Messages ───────────────────────────────────── */

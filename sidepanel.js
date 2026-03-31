@@ -151,12 +151,140 @@ function convertText(text, style) {
   return [...text].map((ch) => convertChar(ch, style)).join('');
 }
 
-// ── Storage Helpers ───────────────────────────────────────────────────────────
+// ── Internationalisation ──────────────────────────────────────────────────────
+
+const STRINGS = {
+  en: {
+    recentLabel: 'Recent',
+    clearRecent: 'Clear',
+    tabStyle: 'Style',
+    tabSearch: 'Search',
+    tabFavorites: 'Favorites',
+    converterLabel: 'Enter text to convert',
+    converterPlaceholder: 'Type something…',
+    searchLabel: 'Search Unicode characters',
+    searchPlaceholder: 'heart, arrow, math…',
+    searchEmpty: 'No results found. Try another keyword.',
+    searchHint: 'Search by name or keyword — e.g. <em>heart</em>, <em>arrow</em>, <em>math</em>',
+    favHint: 'Right-click ★ to add to favorites',
+    favoritesLabel: 'Saved Glyphs',
+    clearFavorites: 'Clear all',
+    favoritesEmpty: 'No favorites yet. Right-click ★ on any glyph to save it.',
+    recentEmpty: 'Nothing yet — use the converter or search!',
+    copyBtn: '⎘ Copy',
+    clickToCopy: 'Click to copy',
+    toastCopied: 'Copied',
+    toastRemovedFav: 'Removed from favorites',
+    toastAddedFav: '★ Added to favorites',
+    toastClearRecent: 'Recent history cleared',
+    toastClearFav: 'Favorites cleared',
+    toastNothingToCopy: 'Nothing to copy yet!',
+    confirmClearFav: 'Clear all favorites?',
+    langToggleTitle: '切换为中文',
+  },
+  zh: {
+    recentLabel: '最近',
+    clearRecent: '清除',
+    tabStyle: '样式',
+    tabSearch: '搜索',
+    tabFavorites: '收藏',
+    converterLabel: '输入文字以转换',
+    converterPlaceholder: '输入文字…',
+    searchLabel: '搜索 Unicode 字符',
+    searchPlaceholder: '心形、箭头、数学…',
+    searchEmpty: '未找到结果，请尝试其他关键词。',
+    searchHint: '按名称或关键词搜索，例如 <em>heart</em>、<em>arrow</em>、<em>math</em>',
+    favHint: '右键点击 ★ 可收藏字符',
+    favoritesLabel: '已收藏',
+    clearFavorites: '清除全部',
+    favoritesEmpty: '暂无收藏。右键点击字符上的 ★ 可收藏。',
+    recentEmpty: '暂无记录 — 使用样式或搜索功能吧！',
+    copyBtn: '⎘ 复制',
+    clickToCopy: '点击复制',
+    toastCopied: '已复制',
+    toastRemovedFav: '已取消收藏',
+    toastAddedFav: '★ 已收藏',
+    toastClearRecent: '已清除最近记录',
+    toastClearFav: '已清除收藏',
+    toastNothingToCopy: '还没有内容可复制！',
+    confirmClearFav: '清除所有收藏？',
+    langToggleTitle: 'Switch to English',
+  },
+};
+
+let currentLang = 'en';
+
+function t(key) {
+  return (STRINGS[currentLang] || STRINGS.en)[key] ?? STRINGS.en[key] ?? key;
+}
+
+function applyLang(lang) {
+  currentLang = lang;
+  localStorage.setItem(STORAGE_KEYS.lang, lang);
+
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+
+  const langBtn = document.getElementById('langToggle');
+  langBtn.textContent = lang === 'zh' ? 'EN' : '中';
+  langBtn.title = t('langToggleTitle');
+
+  // Recent section
+  document.querySelector('#recentSection .section-label').textContent = t('recentLabel');
+  document.getElementById('clearRecent').textContent = t('clearRecent');
+
+  // Tab labels
+  const tabLabels = document.querySelectorAll('.tab-btn .tab-label');
+  if (tabLabels[0]) tabLabels[0].textContent = t('tabStyle');
+  if (tabLabels[1]) tabLabels[1].textContent = t('tabSearch');
+  if (tabLabels[2]) tabLabels[2].textContent = t('tabFavorites');
+
+  // Style converter
+  document.querySelector('label[for="converterInput"]').textContent = t('converterLabel');
+  document.getElementById('converterInput').placeholder = t('converterPlaceholder');
+
+  // Search
+  document.querySelector('label[for="searchInput"]').textContent = t('searchLabel');
+  document.getElementById('searchInput').placeholder = t('searchPlaceholder');
+  document.getElementById('searchEmpty').textContent = t('searchEmpty');
+  document.getElementById('searchHint').innerHTML = t('searchHint');
+  document.getElementById('favHint').textContent = t('favHint');
+
+  // Favorites
+  document.querySelector('.favorites-header .section-label').textContent = t('favoritesLabel');
+  document.getElementById('clearFavorites').textContent = t('clearFavorites');
+  document.getElementById('favoritesEmpty').textContent = t('favoritesEmpty');
+
+  // Update already-rendered copy buttons in style grid
+  document.querySelectorAll('.copy-btn:not(.copied)').forEach((btn) => {
+    btn.innerHTML = t('copyBtn');
+  });
+
+  // Re-render recent to refresh the empty-state text
+  renderRecent();
+}
+
+function initLang() {
+  const saved = localStorage.getItem(STORAGE_KEYS.lang);
+  let lang;
+  if (saved === 'en' || saved === 'zh') {
+    lang = saved;
+  } else {
+    lang = navigator.language.startsWith('zh') ? 'zh' : 'en';
+  }
+  applyLang(lang);
+
+  document.getElementById('langToggle').addEventListener('click', () => {
+    applyLang(currentLang === 'en' ? 'zh' : 'en');
+  });
+}
+
+
 
 const STORAGE_KEYS = {
   favorites: 'glyphbox_favorites',
   recent: 'glyphbox_recent',
   theme: 'glyphbox_theme',
+  lang: 'glyphbox_lang',
 };
 
 // Maximum number of recent items to keep in history.
@@ -275,7 +403,7 @@ function renderRecent() {
   const items = loadRecent();
 
   if (items.length === 0) {
-    container.innerHTML = '<span class="recent-empty">Nothing yet — use the converter or search!</span>';
+    container.innerHTML = `<span class="recent-empty">${escHtml(t('recentEmpty'))}</span>`;
     return;
   }
 
@@ -288,7 +416,7 @@ function renderRecent() {
     chip.innerHTML = `<span class="chip-glyph">${escHtml(item.char)}</span><span class="chip-label">${escHtml(shortenName(item.name || item.char))}</span>`;
     chip.addEventListener('click', async () => {
       await copyToClipboard(item.char);
-      showToast(`Copied  ${item.char}`);
+      showToast(`${t('toastCopied')}  ${item.char}`);
     });
     container.appendChild(chip);
   });
@@ -326,7 +454,7 @@ function buildStyleGrid() {
 
     const copyBtn = document.createElement('button');
     copyBtn.className = 'copy-btn';
-    copyBtn.innerHTML = '⎘ Copy';
+    copyBtn.innerHTML = t('copyBtn');
     copyBtn.title = `Copy ${style.name} text`;
 
     const output = document.createElement('div');
@@ -336,17 +464,17 @@ function buildStyleGrid() {
 
     copyBtn.addEventListener('click', async () => {
       const converted = convertText(currentConverterText, style);
-      if (!converted) { showToast('Nothing to copy yet!'); return; }
+      if (!converted) { showToast(t('toastNothingToCopy')); return; }
       const ok = await copyToClipboard(converted);
       if (ok) {
-        copyBtn.textContent = '✓ Copied!';
+        copyBtn.textContent = `✓ ${t('toastCopied')}!`;
         copyBtn.classList.add('copied');
         setTimeout(() => {
-          copyBtn.innerHTML = '⎘ Copy';
+          copyBtn.innerHTML = t('copyBtn');
           copyBtn.classList.remove('copied');
         }, 1500);
         addToRecent({ char: converted.slice(0, 8), name: `${style.name}: ${currentConverterText.slice(0, 6)}` });
-        showToast(`Copied ${style.name}!`);
+        showToast(`${t('toastCopied')} ${style.name}!`);
       }
     });
 
@@ -430,8 +558,8 @@ function buildGlyphCard(entry, isFav) {
   const card = document.createElement('button');
   card.className = `glyph-card${isFav ? ' is-fav' : ''}`;
   card.setAttribute('role', 'listitem');
-  card.title = `${entry.name}\nU+${entry.char.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')}\nClick to copy`;
-  card.setAttribute('aria-label', `${entry.name}, click to copy`);
+  card.title = `${entry.name}\nU+${entry.char.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')}\n${t('clickToCopy')}`;
+  card.setAttribute('aria-label', `${entry.name}, ${t('clickToCopy')}`);
 
   const glyphEl = document.createElement('span');
   glyphEl.className = 'glyph-char';
@@ -457,7 +585,7 @@ function buildGlyphCard(entry, isFav) {
     if (e.button !== 0) return;
     const ok = await copyToClipboard(entry.char);
     if (ok) {
-      showToast(`Copied  ${entry.char}`);
+      showToast(`${t('toastCopied')}  ${entry.char}`);
       addToRecent({ char: entry.char, name: entry.name });
       glyphEl.style.transform = 'scale(1.4)';
       glyphEl.style.transition = 'transform 0.2s cubic-bezier(0.34,1.56,0.64,1)';
@@ -544,11 +672,11 @@ function toggleFavorite(entry, cardEl) {
   if (existing >= 0) {
     favs.splice(existing, 1);
     cardEl.classList.remove('is-fav');
-    showToast(`Removed from favorites`);
+    showToast(t('toastRemovedFav'));
   } else {
     favs.unshift({ char: entry.char, name: entry.name });
     cardEl.classList.add('is-fav');
-    showToast(`★ Added to favorites`);
+    showToast(t('toastAddedFav'));
   }
 
   saveFavorites(favs);
@@ -589,10 +717,10 @@ function renderFavorites() {
 
 function initFavorites() {
   document.getElementById('clearFavorites').addEventListener('click', () => {
-    if (confirm('Clear all favorites?')) {
+    if (confirm(t('confirmClearFav'))) {
       saveFavorites([]);
       renderFavorites();
-      showToast('Favorites cleared');
+      showToast(t('toastClearFav'));
     }
   });
 }
@@ -603,7 +731,7 @@ function initRecent() {
   document.getElementById('clearRecent').addEventListener('click', () => {
     saveRecent([]);
     renderRecent();
-    showToast('Recent history cleared');
+    showToast(t('toastClearRecent'));
   });
   renderRecent();
 }
@@ -627,6 +755,7 @@ function init() {
   initConverter();
   initSearch();
   initFavorites();
+  initLang();
 
   // Theme toggle button
   document.getElementById('themeToggle').addEventListener('click', () => {

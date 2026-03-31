@@ -14,9 +14,12 @@
         <span class="logo-icon">⊞</span>
         <span class="logo-text">GlyphBox</span>
       </div>
-      <button id="themeToggle" class="icon-btn" title="Toggle dark/light mode" aria-label="Toggle theme">
-        <span class="theme-icon">🌙</span>
-      </button>
+      <div class="header-actions">
+        <button id="langToggle" class="icon-btn" aria-label="Switch language">中</button>
+        <button id="themeToggle" class="icon-btn" title="Toggle dark/light mode" aria-label="Toggle theme">
+          <span class="theme-icon">🌙</span>
+        </button>
+      </div>
     </header>
 
     <!-- Recent History -->
@@ -87,6 +90,7 @@
               />
               <button id="clearSearch" class="clear-btn" aria-label="Clear search" title="Clear">✕</button>
             </div>
+            <p id="favHint" class="fav-hint">Right-click ★ to add to favorites</p>
           </div>
 
           <div id="searchResults" class="glyph-grid" role="list" aria-live="polite" aria-label="Search results">
