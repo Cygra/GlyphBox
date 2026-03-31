@@ -4,6 +4,8 @@
 
 📖 **[English README](README.md)**
 
+<img width="637" height="499" alt="image" src="https://github.com/user-attachments/assets/771f4ebc-56fd-4dad-80b9-e3fb6fdda308" />
+
 ---
 
 ## ✨ 功能介绍
