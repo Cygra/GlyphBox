@@ -390,11 +390,24 @@ function initConverter() {
 
 let searchDebounce = null;
 
+// Entry for 𝕏 (Mathematical Double-Struck Capital X), pinned to the top
+// when the query is exactly "x" or "X".
+const PINNED_X_CHAR = '𝕏';
+
 function searchUnicode(query) {
   if (!query || query.trim() === '') return [];
   const q = query.toLowerCase().trim();
   const results = [];
   const seen = new Set();
+
+  // Special-case: pin 𝕏 as the first result for the bare letter "x" / "X"
+  if (q === 'x') {
+    const pinnedEntry = UNICODE_DATA.find((e) => e.char === PINNED_X_CHAR);
+    if (pinnedEntry) {
+      results.push(pinnedEntry);
+      seen.add(pinnedEntry.char);
+    }
+  }
 
   for (const entry of UNICODE_DATA) {
     if (seen.has(entry.char)) continue;
